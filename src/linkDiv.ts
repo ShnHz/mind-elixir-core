@@ -23,8 +23,8 @@ const linkDiv = function (this: MindElixirInstance, mainNode?: Wrapper) {
   const pW = root.offsetWidth
   const pH = root.offsetHeight
 
-  const nodes = this.map.querySelector("me-nodes");
-  const nw = (nodes as HTMLElement).offsetWidth;
+  const nodes = this.map.querySelector('me-nodes')
+  const nw = (nodes as HTMLElement).offsetWidth
 
   // pin center
   this.nodes.style.top = `${10000 - this.nodes.offsetHeight / 2}px`
@@ -45,11 +45,13 @@ const linkDiv = function (this: MindElixirInstance, mainNode?: Wrapper) {
     const cH = tpc.offsetHeight
     const direction = el.parentNode.className as DirectionClass
 
-    const mainPath = this.generateMainBranch({ pT, pL, pW, pH, cT, cL, cW, cH, direction, containerHeight: this.nodes.offsetHeight })
+    const { path, id } = this.generateMainBranch({ pT, pL, pW, pH, cT, cL, cW, cH, direction, containerHeight: this.nodes.offsetHeight, el }) as any
     const palette = this.theme.palette
     const branchColor = tpc.nodeObj.branchColor || palette[i % palette.length]
     tpc.style.borderColor = branchColor
-    this.lines.appendChild(createPath(mainPath, branchColor, '3'))
+    const pathDom = createPath(path, branchColor, '3')
+    pathDom.dataset.nodeId = id
+    this.lines.appendChild(pathDom)
 
     // set position of main node expander
     const expander = el.children[0].children[1]
@@ -109,8 +111,10 @@ const traverseChildren = function (
     const cH = childP.offsetHeight
 
     const bc = childP.firstChild.nodeObj.branchColor || branchColor
-    const path = mei.generateSubBranch({ pT, pL, pW, pH, cT, cL, cW, cH, direction, isFirst })
-    svgContainer.appendChild(createPath(path, bc, '2'))
+    const { path, id } = mei.generateSubBranch({ pT, pL, pW, pH, cT, cL, cW, cH, direction, isFirst, el: childP }) as any
+    const pathDom = createPath(path, bc, '2')
+    pathDom.dataset.nodeId = id
+    svgContainer.appendChild(pathDom)
 
     const expander = childP.children[1]
 
