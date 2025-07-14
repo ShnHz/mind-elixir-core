@@ -146,21 +146,35 @@
       }
     }
     me-epd {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: absolute;
       height: 18px;
-      width: 18px;
+      min-width: 18px;
       opacity: 0.8;
-      background-image: url('./icons/add-circle.svg');
+
+      background-color: var(--main-color);
       background-repeat: no-repeat;
       background-size: contain;
       background-position: center;
 
+      border-radius: 18px;
+
       pointer-events: all;
       z-index: 9;
+      span {
+        user-select: none;
+        pointer-events: none;
+        color: var(--main-bgcolor);
+      }
       &.minus {
         background-image: url('./icons/minus-circle.svg') !important;
         transition: opacity 0.3s;
         opacity: 0;
+        span{
+          display: none;
+        }
         &:hover {
           opacity: 0.8;
         }

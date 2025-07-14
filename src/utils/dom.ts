@@ -6,6 +6,21 @@ import { layoutChildren } from './layout'
 
 // DOM manipulation
 const $d = document
+
+// 递归统计nodeObj的children数量
+export const countChildren = function (nodeObj: NodeObj): number {
+  if (!nodeObj.children || nodeObj.children.length === 0) {
+    return 0
+  }
+
+  let count = nodeObj.children.length
+  for (let i = 0; i < nodeObj.children.length; i++) {
+    count += countChildren(nodeObj.children[i])
+  }
+
+  return count
+}
+
 export const findEle = (id: string, instance?: MindElixirInstance) => {
   const scope = instance ? instance.el : $d
   const ele = scope.querySelector<Topic>(`[data-nodeid=me${id}]`)
@@ -92,7 +107,7 @@ export const createWrapper = function (this: MindElixirInstance, nodeObj: NodeOb
   const { p, tpc } = this.createParent(nodeObj)
   grp.appendChild(p)
   if (!omitChildren && nodeObj.children && nodeObj.children.length > 0) {
-    const expander = createExpander(nodeObj.expanded)
+    const expander = createExpander(nodeObj.expanded, nodeObj)
     p.appendChild(expander)
     // tpc.expander = expander
     if (nodeObj.expanded !== false) {
@@ -195,10 +210,17 @@ export const editTopic = function (this: MindElixirInstance, el: Topic) {
   console.timeEnd('editTopic')
 }
 
-export const createExpander = function (expanded: boolean | undefined): Expander {
+export const createExpander = function (expanded: boolean | undefined, nodeObj?: NodeObj): Expander {
+  let childrenCount = 0
+  if (nodeObj) {
+    childrenCount = countChildren(nodeObj)
+  }
+
   const expander = $d.createElement('me-epd') as Expander
   // if expanded is undefined, treat as expanded
   expander.expanded = expanded !== false
   expander.className = expanded !== false ? 'minus' : ''
+  expander.innerHTML = `<span>${childrenCount}</span>`
+
   return expander
 }
